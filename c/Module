@@ -20,6 +20,8 @@
 //  the above GPL permits
 //
 //  Modifications for RPCEmu (C) 2007 Alex Waugh
+//
+//  Modifications for EtherTUN (C) 2020 sashz@pdaXrom.org
 
 #include <limits.h>
 #include <stdio.h>
@@ -109,10 +111,10 @@ static struct mbuf *data_mbuf = NULL;
 
 /// List of locations to try to install the AutoSense file
 static const char *autosense_locations[] = {
-	"<Boot$Dir>.Resources.Configure.!InetSetup.AutoSense.EtherRPCEm",
-	"<Boot$Dir>.RO420Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherRPCEm",
-	"<Boot$Dir>.RO430Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherRPCEm",
-	"<Boot$Dir>.RO440Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherRPCEm",
+	"<Boot$Dir>.Resources.Configure.!InetSetup.AutoSense.EtherTUN",
+	"<Boot$Dir>.RO420Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherTUN",
+	"<Boot$Dir>.RO430Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherTUN",
+	"<Boot$Dir>.RO440Hook.Res.Configure.!NetSetup.!IFSetup.AutoSense.EtherTUN",
 	NULL
 };
 
@@ -271,11 +273,11 @@ InitChip(workspace *work)
 {
 	_kernel_swi_regs sregs;
 
-	work->base_dib.dib_swibase = EtherRPCEm_00;
-	work->base_dib.dib_name = "rpcem";
+	work->base_dib.dib_swibase = EtherTUN_00;
+	work->base_dib.dib_name = "tun";
 	work->base_dib.dib_unit = 0;
 	work->base_dib.dib_address = (unsigned char *) work->dev_addr;
-	work->base_dib.dib_module = "EtherRPCEm";
+	work->base_dib.dib_module = "EtherTUN";
 	work->base_dib.dib_location = "Emulated";
 	work->base_dib.dib_slot.slotid = 0;
 	work->base_dib.dib_slot.minor = 0;

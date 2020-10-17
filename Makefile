@@ -1,4 +1,4 @@
-# Project:   EtherRPCEm
+# Project:   EtherTUN
 
 
 # Toolflags:
@@ -12,7 +12,7 @@ Squeezeflags = -o $@
 
 
 # Final targets:
-EtherRPCEm: @.o.Module @.o.intveneer @.o.ModHdr
+EtherTUN: @.o.Module @.o.intveneer @.o.ModHdr
         Link $(Linkflags) @.o.Module @.o.intveneer @.o.ModHdr C:o.stubs
 
 
@@ -23,9 +23,9 @@ clean:
 	remove o.intveneer
 	remove o.ModHdr
 	remove o.Module
-	remove EtherRPCEm
+	remove EtherTUN
 
-c.AutoSense: AutoSense.EtherRPCEm
+c.AutoSense: AutoSense.EtherTUN
 	bin2c -t "const unsigned char" -n autosense_file $? $@
 
 # Static dependencies:
@@ -44,15 +44,6 @@ h.ModHdr: cmhg.ModHdr
 
 
 # Dynamic dependencies:
-o.Module:	c.Module
-o.Module:	C:h.kernel
-o.Module:	C:h.swis
-o.Module:	h.ModHdr
-o.Module:	h.Defines
-o.Module:	h.Structs
-o.Module:	h.mbuf_c
-o.Module:	h.DCI
-o.Module:	h.Module
-o.Module:	h.DCI
-o.Module:	c.AutoSense
 o.intveneer: s.intveneer h.Equates
+o.Module: c.Module C:h.kernel C:h.swis h.ModHdr h.Defines h.Structs h.mbuf_c h.DCI h.Module h.DCI c.AutoSense
+o.Module: c.Module C:h.kernel C:h.swis h.ModHdr h.Defines h.Structs h.mbuf_c h.DCI h.Module h.DCI c.AutoSense

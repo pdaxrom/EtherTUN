@@ -29,7 +29,7 @@ service-call-handler: service_call 0x49 0x9b 0x9f 0xa2
 
 swi-chunk-base-number: 0x58CC0
 
-swi-decoding-table: EtherTUN, DCIVersion, Inquire, GetNetworkMTU, SetNetworkMTU, Transmit, Filter, Stats, Multicastreq
+swi-decoding-table: EtherTUN, DCIVersion, Inquire, GetNetworkMTU, SetNetworkMTU, Transmit, Filter, Stats, Multicastreq, ReceiveIRQSim
 
 swi-handler-code: swi_handler
 

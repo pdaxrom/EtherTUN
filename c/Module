@@ -242,8 +242,9 @@ finalise(int fatal, int podule, void *private_word)
 	// ints off to ensure it stays quiet..
 	_kernel_swi(OS_IntOff, &sregs, &sregs);
 
-	networkirqswi(0);
-	_swix(OS_ReleaseDeviceVector, _INR(0,4), 13, CallEveryVeneer, work, &irqstatus, 1);
+//FIXME:
+//	networkirqswi(0);
+//	_swix(OS_ReleaseDeviceVector, _INR(0,4), 13, CallEveryVeneer, work, &irqstatus, 1);
 
 	// free any mem owned here
 	if (work) {
@@ -310,13 +311,16 @@ initialise(const char *cmd_tail, int podule_base, void *private_word)
 	UNUSED(cmd_tail);
 	UNUSED(podule_base);
 
+//printf("Hello\n");
+
 	work = 0;
 
 	if (work = calloc(1, sizeof(workspace)), work == NULL) { // ensure all pointers cleared to Null
 		return &ErrorNoBuff;
 	}
 
-	networkhwaddrswi((unsigned char *) work->dev_addr);
+//FIXME:
+//	networkhwaddrswi((unsigned char *) work->dev_addr);
 
 	work->pwp = private_word;
 
@@ -339,14 +343,17 @@ initialise(const char *cmd_tail, int podule_base, void *private_word)
 	PodMaskAddr = (unsigned char *) ribuff[0]; // IOC irq reg
 	PodMask = (unsigned char) ribuff[1]; // IOC irq mask for pod
 
-	err = _swix(OS_ClaimDeviceVector, _INR(0,4), 13, CallEveryVeneer, work, &irqstatus, 1);
-	if (err) {
-		return err;
-	}
+//FIXME:
+//	err = _swix(OS_ClaimDeviceVector, _INR(0,4), 13, CallEveryVeneer, work, &irqstatus, 1);
+//	if (err) {
+//		return err;
+//	}
 
 	*PodMaskAddr |= PodMask; // set the pod irq
 
-	networkirqswi(&irqstatus);
+//	networkirqswi(&irqstatus);
+
+//printf("Hello OK\n");
 
 	return NULL;
 }
@@ -375,6 +382,7 @@ callevery_handler(workspace *work)
 
 			rxhdr = (rx_hdr *) (((char *) rxhdr_mbuf) + rxhdr_mbuf->m_off);
 			rxhdr_mbuf->m_len = sizeof(rx_hdr);
+//FIXME:
 			if (networkrxswi(data_mbuf, rxhdr, &valid) || !valid) {
 				// No data
 				sema = 0;
@@ -586,6 +594,8 @@ swi_handler(int swi_no, _kernel_swi_regs *r, void *private_word)
 			struct mbuf *next = mbufchain->m_list;
 
 			if (err == NULL) {
+printf("TUN TX\n");
+//FIXME:
 				err = networktxswi(mbufchain, r->r[4], (r->r[0] & 1) ? r->r[5] : 0, r->r[2]);
 				// Increment transmit frames
 				work->st_tx_frames++;
@@ -777,6 +787,15 @@ claimframe:
 		if (r->r[0] && ~3) {
 			printf("\n EYmulticast not fully implemented yet\n");
 		}
+		break;
+
+	case SWIReceiveIRQSim:
+		if (callevery_handler(work)) {
+		    r->r[0] = 1;
+		} else {
+		    r->r[0] = 0;
+		}
+		
 		break;
 
 	default:

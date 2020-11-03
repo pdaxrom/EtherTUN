@@ -42,6 +42,8 @@
 #define SWIStats          6
 #define SWIMulticastreq   7
 
+#define SWIReceiveIRQSim  (SWIDCIVersion + 16)
+
 #undef  Mbuf_OpenSession
 #define Mbuf_OpenSession      0x4a580
 #undef  Mbuf_CloseSession

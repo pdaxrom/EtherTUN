@@ -34,7 +34,7 @@ networktxswi
 	MOV	a3, a1
 	LDR	a2, =errmess
 	MOV	a1, #0
-	SWI	&56ac4
+	SWI	&C56AC4
 	TST	a1, #0
 	LDRNE	a1, =errbuf
 	LDMFD	sp!, {v1, v2, pc}
@@ -47,7 +47,7 @@ networkrxswi
 	MOV	a3, a1
 	LDR	a2, =errmess
 	MOV	a1, #1
-	SWI	&56ac4
+	SWI	&C56AC4
 	TEQ	a1, #0
 	LDRNE	a1, =errbuf
 	TEQ	v1, #0
@@ -60,7 +60,7 @@ networkirqswi
 	MOV	a3, a1
 	LDR	a2, =errmess
 	MOV	a1, #2
-	SWI	&56ac4
+	SWI	&C56AC4
 	TST	a1, #0
 	LDRNE	a1, =errbuf
 	LDMFD	sp!, {pc}
@@ -71,7 +71,7 @@ networkhwaddrswi
 	MOV	a3, a1
 	LDR	a2, =errmess
 	MOV	a1, #4
-	SWI	&56ac4
+	SWI	&C56AC4
 	TST	a1, #0
 	LDRNE	a1, =errbuf
 	LDMFD	sp!, {pc}
@@ -119,7 +119,7 @@ CallEveryVeneer
         MOV     a3, #0
         LDR     a2, =errmess
         MOV     a1, #3
-        SWI     &56ac4
+        SWI     &C56AC4
 
         ldmfd   sp!, {a1-a2}
         mov     a1, a2              ; a1 = base device pointer

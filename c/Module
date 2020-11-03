@@ -595,6 +595,8 @@ swi_handler(int swi_no, _kernel_swi_regs *r, void *private_word)
 
 			if (err == NULL) {
 printf("TUN TX\n");
+//printf("TUN m_len = %d\n", mbufchain->m_len);
+//printf("TUN m_off = %d\n", mbufchain->m_off);
 //FIXME:
 				err = networktxswi(mbufchain, r->r[4], (r->r[0] & 1) ? r->r[5] : 0, r->r[2]);
 				// Increment transmit frames

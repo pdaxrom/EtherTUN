@@ -1,0 +1,13 @@
+help-string:  Ping_Module 0.00
+
+title-string: PingModule
+
+initialisation-code: ping_initialise
+
+# module-is-runnable:
+
+swi-chunk-base-number: 0x88000
+
+swi-handler-code: ping_swi
+
+service-call-handler: ping_service 4 6 8

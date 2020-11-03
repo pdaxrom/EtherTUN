@@ -41,8 +41,7 @@
 #define SWIFilter         5
 #define SWIStats          6
 #define SWIMulticastreq   7
-
-#define SWIReceiveIRQSim  (SWIDCIVersion + 16)
+#define SWIReceiveIRQSim  8
 
 #undef  Mbuf_OpenSession
 #define Mbuf_OpenSession      0x4a580
@@ -69,7 +68,9 @@
 #define EYVirtDrvr       1 << 10       // driver is virtual driver
 #define EYVirtDrvrSW     1 << 11       // driver is virtual driver software only
 
-#define EYFlagsSupported ( EYMulticast | EYPromiscuous | /*EYRxOwn |*/ EYRxErrPkt | EYHasHWAdd | EYChgHWAdd | EYStdStats | EYExtStats )
+//#define EYFlagsSupported ( EYMulticast | EYPromiscuous | /*EYRxOwn |*/ EYRxErrPkt | EYHasHWAdd | EYChgHWAdd | EYStdStats | EYExtStats )
+#define EYFlagsSupported ( EYMulticast | EYPromiscuous | /*EYRxOwn |*/ EYRxErrPkt | EYStdStats | EYExtStats )
+//#define EYFlagsSupported ( EYMulticast | EYPromiscuous | /*EYRxOwn |*/ EYRxErrPkt | EYPtP | EYStdStats | EYExtStats )
                          
 #define EY_MTU           1500      // max ethernet packet length (allow for poss extra byte ..
 #define ETH_ZLEN         64     // count to get min ethernet packet length

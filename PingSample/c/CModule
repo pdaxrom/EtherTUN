@@ -1,0 +1,122 @@
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <ctype.h>
+
+#include <kernel.h>
+#include <stdio.h>
+
+#include "../mbuf_c.h"
+
+#define  TM                     "PingModule"
+#define  UNKNOWN_CMD_SERVICE    4
+#define  UNUSED(x)              (x = x)
+
+static _kernel_oserror tm_error = { 0x88000, "*** " TM " error ***" };
+
+static int unknown_cmd_count;
+static int other_service_call_count;
+static int xxx;
+
+void print_mac(unsigned char *hw)
+{
+    int i;
+    printf("%02X:%02X:%02X:%02X:%02X:%02X", hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]);
+}
+
+static void DUMP(unsigned char *buffer, int size)
+{
+       int i;
+       printf("DUMP %d bytes:\n", size);
+
+	for (i = 0; i < size; i++) {
+		printf("%02X ", buffer[i]);
+		if (i % 16 == 15) {
+			printf("\n");
+		}
+	}
+	printf("\n");
+}
+
+_kernel_oserror *ping_swi(int swi_no, _kernel_swi_regs *r, void *private_word)
+{
+    UNUSED(private_word);
+
+    if (r->r[0] == 0) {
+	int cnt = 0;
+	struct mbuf *mb = (struct mbuf *) r->r[2];
+	printf("Write to TUN\n");
+
+	while (mb) {
+	    unsigned char *ptr = (unsigned char *) mb;
+	    unsigned char *hwsrc = (unsigned char *) r->r[3];
+	    unsigned char *hwdst = (unsigned char *) r->r[4];
+	    unsigned int frametype = r->r[5];
+
+	    printf("%d: ", cnt++);
+
+	    print_mac(hwsrc);
+	    printf(" -> ");
+	    print_mac(hwdst);
+	    printf("\n");
+
+	    printf("m_len = %d\n", mb->m_len);
+	    printf("m_off = %d\n", mb->m_off);
+	    printf("frametype = %04X\n", frametype);
+
+	    ptr += mb->m_off;
+
+printf("src=%08X\n", *((unsigned int *) &ptr[12]));
+printf("dst=%08X\n", *((unsigned int *) &ptr[16]));
+
+DUMP(ptr, mb->m_len);
+
+
+	    mb = mb->m_next;
+	}
+
+	r->r[0] = 0;
+    } else if (r->r[0] == 1) {
+	printf("Read from TUN\n");
+    } else {
+	printf("Req from TUN %d\n", r->r[0]);
+    }
+
+//    printf("%s: SWI no %d, r0 = %8x\n", TM, swi_no, r->r[0]);
+//    printf(
+//        "(%u unknown commands and %u other service calls since last call)\n",
+//        unknown_cmd_count, other_service_call_count);
+//    unknown_cmd_count = other_service_call_count = 0;
+//    if (swi_no % 4 == 0)
+//        return &tm_error;
+//    else if (swi_no == 1)
+//        xxx = 10 + swi_no / (swi_no-1);  /* this will fail, divide by zero */
+    return 0;
+}
+
+void ping_service(int service_number, _kernel_swi_regs *r, void *private_word)
+{
+    UNUSED(r);
+    UNUSED(private_word);
+/*
+ *  In general, it is a Bad Thing to use printf inside an arbitrary
+ *  service call handler (e.g. in one that catches errors - call 6 -
+ *  as this one does. Therefore we merely count what's happening and
+ * print it out when the TestCModule's SWI is called.
+ */
+    if (service_number == UNKNOWN_CMD_SERVICE)
+        ++unknown_cmd_count;
+    else
+        ++other_service_call_count;
+}
+
+int ping_initialise(char *cmd_tail, int podule_base, void *private_word)
+{
+    UNUSED(cmd_tail);
+    UNUSED(podule_base);
+    UNUSED(private_word);
+    unknown_cmd_count = other_service_call_count = 0;
+    return 0;
+}

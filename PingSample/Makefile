@@ -32,3 +32,4 @@ clean:
 # Dynamic dependencies:
 o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c
 o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c
+o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c

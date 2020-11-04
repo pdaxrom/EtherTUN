@@ -55,13 +55,13 @@ void callrx(dib *dibaddr, struct mbuf *mbuf_chain, int claimaddr, int pwp);
 #define DCIVersion 403
 
 static _kernel_oserror
-    ErrorIllegalFlags   = { 0x58cc0, "Illegal flags" },
-    ErrorInvalidMTU     = { 0x58cc1, "Invalid MTU requested" },
-    ErrorIllegalSWI     = { 0x58cc2, "Not an EtherL SWI" },
-    ErrorNoUnit         = { 0x58cc3, "Unit not configured" },
-    ErrorBadClaim       = { 0x58cc4, "Illegal frame claim" },
-    ErrorAlreadyClaimed = { 0x58cc5, "frame already claimed" },
-    ErrorNoBuff         = { 0x58cc6, "No buffer space" };
+    ErrorIllegalFlags   = { 0x88100, "Illegal flags" },
+    ErrorInvalidMTU     = { 0x88101, "Invalid MTU requested" },
+    ErrorIllegalSWI     = { 0x88102, "Not an EtherL SWI" },
+    ErrorNoUnit         = { 0x88103, "Unit not configured" },
+    ErrorBadClaim       = { 0x88104, "Illegal frame claim" },
+    ErrorAlreadyClaimed = { 0x88105, "frame already claimed" },
+    ErrorNoBuff         = { 0x88106, "No buffer space" };
 
 workspace *work;
 

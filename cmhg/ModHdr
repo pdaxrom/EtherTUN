@@ -27,7 +27,7 @@ finalisation-code: finalise
 
 service-call-handler: service_call 0x49 0x9b 0x9f 0xa2
 
-swi-chunk-base-number: 0x58CC0
+swi-chunk-base-number: 0x88100
 
 swi-decoding-table: EtherTUN, DCIVersion, Inquire, GetNetworkMTU, SetNetworkMTU, Transmit, Filter, Stats, Multicastreq, ReceiveIRQSim
 

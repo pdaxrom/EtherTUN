@@ -11,25 +11,27 @@ Squeezeflags = -o $@
 
 
 # Final targets:
-@.PingModule:   @.o.CModuleHdr @.o.cmodule C:o.Stubs 
-        Link $(Linkflags) @.o.CModuleHdr @.o.cmodule C:o.Stubs 
+@.PingModule:   @.o.CModuleHdr @.o.CModule @.o.intveneer C:o.Stubs
+        Link $(Linkflags) @.o.CModuleHdr @.o.CModule @.o.intveneer C:o.Stubs
 
 
 # User-editable dependencies:
 clean:
 	remove h.ModHdr
 	remove o.CModuleHdr
-	remove o.cmodule
+	remove o.CModule
+	remove o.intveneer
 	remove PingModule
 
 # Static dependencies:
 @.o.CModuleHdr:   @.cmhg.CModuleHdr
         cmhg @.cmhg.CModuleHdr -o @.o.CModuleHdr
-@.o.cmodule:   @.c.cmodule
-        cc $(ccflags) -o @.o.cmodule @.c.cmodule 
+@.o.CModule:   @.c.CModule
+        cc $(ccflags) -o @.o.CModule @.c.CModule 
+@.o.intveneer:   @.s.intveneer
+        objasm $(objasmflags) -from @.s.intveneer -to @.o.intveneer
 
 
 # Dynamic dependencies:
-o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c
-o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c
-o.cmodule: c.cmodule C:h.kernel ^.h.mbuf_c
+o.CModule: c.CModule C:h.kernel ^.h.mbuf_c
+o.CModule: c.CModule C:h.kernel ^.h.mbuf_c

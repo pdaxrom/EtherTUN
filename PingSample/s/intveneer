@@ -1,0 +1,9 @@
+        AREA    |C$$code|,CODE,READONLY
+
+	EXPORT	|networkrxswi|
+networkrxswi
+	STMFD	sp!, {v1, v2, v3, lr}
+	SWI	&88108
+	LDMFD	sp!, {v1, v2, v3, pc}
+
+        END

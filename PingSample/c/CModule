@@ -14,6 +14,8 @@
 #define  UNKNOWN_CMD_SERVICE    4
 #define  UNUSED(x)              (x = x)
 
+_kernel_oserror *networkrxswi(int flags, int unit, int frametype, unsigned char *data, unsigned char *dest, unsigned char *src, int len);
+
 static _kernel_oserror tm_error = { 0x88000, "*** " TM " error ***" };
 
 static int unknown_cmd_count;
@@ -73,6 +75,12 @@ printf("dst=%08X\n", *((unsigned int *) &ptr[16]));
 
 DUMP(ptr, mb->m_len);
 
+	    if (ptr[20] == 0x08 && ptr[21] == 0x00) {
+printf("PING! -> PONG!\n");
+		ptr[20] = 0;
+		networkrxswi(0, 0, frametype, ptr, hwsrc, hwdst, mb->m_len);
+	    }
+
 
 	    mb = mb->m_next;
 	}
@@ -84,15 +92,6 @@ DUMP(ptr, mb->m_len);
 	printf("Req from TUN %d\n", r->r[0]);
     }
 
-//    printf("%s: SWI no %d, r0 = %8x\n", TM, swi_no, r->r[0]);
-//    printf(
-//        "(%u unknown commands and %u other service calls since last call)\n",
-//        unknown_cmd_count, other_service_call_count);
-//    unknown_cmd_count = other_service_call_count = 0;
-//    if (swi_no % 4 == 0)
-//        return &tm_error;
-//    else if (swi_no == 1)
-//        xxx = 10 + swi_no / (swi_no-1);  /* this will fail, divide by zero */
     return 0;
 }
 

@@ -791,13 +791,130 @@ claimframe:
 		}
 		break;
 
+	// receive data
+	// on entry:	r0 = flags (all zero)
+	//		r1 = unit number
+	//		r2 = frame type
+	//		r3 -> data to rx
+	//		r4 -> dest h/w address (byte aligned)
+	//		r5 -> srce h/w address (byte aligned)(if needed)
+	//		r6 -> data length
+	// on exit:	all regs preserved
 	case SWIReceiveIRQSim:
-		if (callevery_handler(work)) {
-		    r->r[0] = 1;
-		} else {
-		    r->r[0] = 0;
+printf("(%d, %d, %04X, %08X, %08X, %08X, %d)\n", r->r[0], r->r[1], r->r[2], r->r[3], r->r[4], r->r[5], r->r[6]);
+		if (r->r[3] && r->r[6]) {
+			rx_hdr *rxhdr;
+
+			static volatile int sema = 0;
+
+			if (sema) {
+				break;
+			}
+			sema = 1;
+
+			if (rxhdr_mbuf == NULL) {
+				rxhdr_mbuf = work->mbctl->alloc_s(work->mbctl, sizeof(rx_hdr), NULL);
+			}
+
+			if (data_mbuf == NULL) {
+				data_mbuf = work->mbctl->alloc_s(work->mbctl, 1500, NULL);
+			}
+
+			if (rxhdr_mbuf && data_mbuf) {
+				int valid;
+
+				rxhdr = (rx_hdr *) (((char *) rxhdr_mbuf) + rxhdr_mbuf->m_off);
+				rxhdr_mbuf->m_len = sizeof(rx_hdr);
+
+				memcpy(rxhdr->rx_dst_addr, (char *)r->r[4], 6);
+				memcpy(rxhdr->rx_src_addr, (char *)r->r[5], 6);
+
+				rxhdr->rx_frame_type = r->r[2];
+				rxhdr->rx_error_level = 0;
+
+				if (r->r[6] > data_mbuf->m_inilen) {
+					printf("\tmbuff too small for received packet\n");
+					sema = 0;
+					break;
+				}
+
+				data_mbuf->m_off = data_mbuf->m_inioff;
+				memcpy(((char *) data_mbuf) + data_mbuf->m_off, (char *) r->r[3], r->r[6]);
+				data_mbuf->m_len = r->r[6];
+
+				// Increment receive frames
+				work->st_rx_frames++;
+
+				if (1) {
+					// do stuff to make a new packet
+					claimbuf *cb;
+					int AddrLevel = AlSpecific;
+					ClaimType Claim = NotClaimed;
+
+					cb = work->claims;
+					while (cb != NULL) {
+						switch (cb->adtype) {
+						case AdSpecific:
+							if ((AddrLevel <= AlNormal) &&
+							    (rxhdr->rx_frame_type == cb->frame) &&
+							    (AddrLevel <= cb->addresslevel)) {
+								Claim = ClaimSpecific;
+							}
+							break;
+						case AdMonitor:
+							if ((rxhdr->rx_frame_type > 1500) &&
+							    (AddrLevel <= cb->addresslevel)) {
+								Claim = ClaimMonitor;
+							}
+							break;
+						case AdIeee:
+							if (rxhdr->rx_frame_type < 1501) {
+								Claim = ClaimIEEE;
+							}
+							break;
+						case AdSink:
+							if (rxhdr->rx_frame_type > 1500) {
+								Claim = ClaimSink;
+							}
+							break;
+						default:
+							break;
+						}
+
+						if (Claim != NotClaimed) {
+							// someone wants it, so check further
+							rxhdr_mbuf->m_next = data_mbuf; // link them together
+							rxhdr_mbuf->m_list = 0; // this is needed
+							//data_mbuf->m_next = NULL;      // link them together
+							data_mbuf->m_list = 0; // this is needed
+							// at this point we dont need to check for safe mbuf
+							// as we've used the alloc routine that only allocs
+							// mbufs that actually are safe
+
+							// now build the rxhdr structure
+							rxhdr_mbuf->m_type = MT_HEADER;
+
+							_swix(OS_IntOn, 0);
+							callrx(&work->base_dib, rxhdr_mbuf, cb->claimaddress, cb->pwp);
+							// The protocol stack is now responsible for freeing the mbufs
+							rxhdr_mbuf = NULL;
+							data_mbuf = NULL;
+							_swix(OS_IntOff, 0);
+							break;
+						}
+						cb = cb->next; // missed that frame type, so try another
+					}
+				}
+			}
+
+			sema = 0;
 		}
-		
+//		if (callevery_handler(work)) {
+//		    r->r[0] = 1;
+///		} else {
+//		    r->r[0] = 0;
+//		}
+//
 		break;
 
 	default:

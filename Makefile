@@ -46,4 +46,3 @@ h.ModHdr: cmhg.ModHdr
 # Dynamic dependencies:
 o.intveneer: s.intveneer h.Equates
 o.Module: c.Module C:h.kernel C:h.swis h.ModHdr h.Defines h.Structs h.mbuf_c h.DCI h.Module h.DCI c.AutoSense
-o.Module: c.Module C:h.kernel C:h.swis h.ModHdr h.Defines h.Structs h.mbuf_c h.DCI h.Module h.DCI c.AutoSense

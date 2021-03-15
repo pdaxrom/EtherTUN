@@ -78,6 +78,11 @@ DUMP(ptr, mb->m_len);
 	    if (ptr[20] == 0x08 && ptr[21] == 0x00) {
 printf("PING! -> PONG!\n");
 		ptr[20] = 0;
+		{
+		unsigned int tmp = *((unsigned int *) &ptr[12]);
+		*((unsigned int *) &ptr[12]) = *((unsigned int *) &ptr[16]);
+		*((unsigned int *) &ptr[16]) = tmp;
+		}
 		networkrxswi(0, 0, frametype, ptr, hwsrc, hwdst, mb->m_len);
 	    }
 

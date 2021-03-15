@@ -118,6 +118,45 @@ static const char *autosense_locations[] = {
 	NULL
 };
 
+
+
+
+
+static void print_mac(unsigned char *hw)
+{
+    int i;
+    printf("%02X:%02X:%02X:%02X:%02X:%02X", hw[0], hw[1], hw[2], hw[3], hw[4], hw[5]);
+}
+
+static void DUMP(unsigned char *buffer, int size)
+{
+       int i;
+       printf("DUMP %d bytes:\n", size);
+
+	for (i = 0; i < size; i++) {
+		printf("%02X ", buffer[i]);
+		if (i % 16 == 15) {
+			printf("\n");
+		}
+	}
+	printf("\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Try to install the AutoSense file into the required location in the Boot
  * sequence.
@@ -831,6 +870,16 @@ printf("(%d, %d, %04X, %08X, %08X, %08X, %d)\n", r->r[0], r->r[1], r->r[2], r->r
 
 				rxhdr->rx_frame_type = r->r[2];
 				rxhdr->rx_error_level = 0;
+
+
+printf("RECEIVED:\n");
+
+print_mac(rxhdr->rx_src_addr);
+printf(" -> ");
+print_mac(rxhdr->rx_dst_addr);
+printf("\n");
+
+DUMP((unsigned char *)r->r[3], r->r[6]);
 
 				if (r->r[6] > data_mbuf->m_inilen) {
 					printf("\tmbuff too small for received packet\n");
